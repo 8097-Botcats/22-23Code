@@ -51,7 +51,7 @@ public class RedLeftAuto extends LinearOpMode {
                  */
             }
         });
-        Pose2d startPose = new Pose2d(-34.5, -60.5, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-35.5, -60.5, Math.toRadians(90));
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         TrajectorySequence trajSeqLeft = drive.trajectorySequenceBuilder(startPose)
@@ -60,7 +60,7 @@ public class RedLeftAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence trajSeqCenter = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-34.5, -34))
+                .lineTo(new Vector2d(-35.5, -34))
                 .build();
 
         TrajectorySequence trajSeqRight = drive.trajectorySequenceBuilder(startPose)

@@ -29,9 +29,7 @@ public class Robot {
     DcMotor bl = null;
     DcMotor br = null;
     DcMotor lift = null;
-    DcMotor duck = null;
 
-    CRServo crServo = null;
     Servo clawServo = null;
 
     double CIRCUMFERENCEOFWHEEL = 314.159; //mm
@@ -52,15 +50,14 @@ public class Robot {
 
 
         fl = hwMap.dcMotor.get("front_left_motor");
-        fr = hwMap.dcMotor.get("front_right_motor");
+        fr = hwMap.dcMotor.get("back_right_motor");
         bl = hwMap.dcMotor.get("back_left_motor");
-        br = hwMap.dcMotor.get("back_right_motor");
+        br = hwMap.dcMotor.get("front_right_motor");
         lift = hwMap.dcMotor.get("lift_dcMotor");
-        duck = hwMap.dcMotor.get("duck_motor");
-        fl.setDirection(DcMotorSimple.Direction.REVERSE);
-        bl.setDirection(DcMotorSimple.Direction.REVERSE);
-        //fr.setDirection(DcMotorSimple.Direction.REVERSE);
-        //br.setDirection(DcMotorSimple.Direction.REVERSE);
+        //fl.setDirection(DcMotorSimple.Direction.REVERSE);
+        //bl.setDirection(DcMotorSimple.Direction.REVERSE);
+        fr.setDirection(DcMotorSimple.Direction.REVERSE);
+        br.setDirection(DcMotorSimple.Direction.REVERSE);
 
         clawServo = hwMap.servo.get("clawServo");
         //liftServo = hwMap.crservo.get("liftServo");

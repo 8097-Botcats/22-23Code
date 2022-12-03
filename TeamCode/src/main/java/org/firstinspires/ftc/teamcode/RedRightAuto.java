@@ -1,14 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
-import com.acmerobotics.roadrunner.*;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.sun.tools.javac.util.BasicDiagnosticFormatter;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -21,8 +16,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Blue Right Auto")
-public class BlueRightAuto extends LinearOpMode {
+@Autonomous(name = "Red Right Auto")
+public class RedRightAuto extends LinearOpMode {
     public void runOpMode() {
         OpenCvWebcam webcam;
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -51,21 +46,21 @@ public class BlueRightAuto extends LinearOpMode {
                  */
             }
         });
-        Pose2d startPose = new Pose2d(-35.5, 60.5, Math.toRadians(-90));
+        Pose2d startPose = new Pose2d(35.5, -60.5, Math.toRadians(90));
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         TrajectorySequence trajSeqRight = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-59, 60.5))
-                .lineTo(new Vector2d(-59, 34))
+                .lineTo(new Vector2d(59, -60.5))
+                .lineTo(new Vector2d(59, -34))
                 .build();
 
         TrajectorySequence trajSeqCenter = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-35.5, 34))
+                .lineTo(new Vector2d(35.5, -34))
                 .build();
 
         TrajectorySequence trajSeqLeft = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-12, 60.5))
-                .lineTo(new Vector2d(-12, 34))
+                .lineTo(new Vector2d(12, -60.5))
+                .lineTo(new Vector2d(12, -34))
                 .build();
 
         while(!isStopRequested() || !isStarted()){

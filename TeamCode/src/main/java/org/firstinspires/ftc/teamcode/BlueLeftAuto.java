@@ -21,8 +21,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Blue Right Auto")
-public class BlueRightAuto extends LinearOpMode {
+@Autonomous(name = "Blue Left Auto")
+public class BlueLeftAuto extends LinearOpMode {
     public void runOpMode() {
         OpenCvWebcam webcam;
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -51,21 +51,21 @@ public class BlueRightAuto extends LinearOpMode {
                  */
             }
         });
-        Pose2d startPose = new Pose2d(-35.5, 60.5, Math.toRadians(-90));
+        Pose2d startPose = new Pose2d(35.5, 60.5, Math.toRadians(-90));
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        TrajectorySequence trajSeqRight = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-59, 60.5))
-                .lineTo(new Vector2d(-59, 34))
+        TrajectorySequence trajSeqLeft = drive.trajectorySequenceBuilder(startPose)
+                .lineTo(new Vector2d(59, 60.5))
+                .lineTo(new Vector2d(59, 34))
                 .build();
 
         TrajectorySequence trajSeqCenter = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-35.5, 34))
+                .lineTo(new Vector2d(35.5, 34))
                 .build();
 
-        TrajectorySequence trajSeqLeft = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-12, 60.5))
-                .lineTo(new Vector2d(-12, 34))
+        TrajectorySequence trajSeqRight = drive.trajectorySequenceBuilder(startPose)
+                .lineTo(new Vector2d(12, 60.5))
+                .lineTo(new Vector2d(12, 34))
                 .build();
 
         while(!isStopRequested() || !isStarted()){
