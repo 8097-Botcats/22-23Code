@@ -58,4 +58,8 @@ dependencies {
     implementation 'com.acmerobotics.roadrunner:core:0.5.5'
 }
 
-
+android{
+    dexOptions{
+        javaMaxHeapSize "4G"
+    }
+}

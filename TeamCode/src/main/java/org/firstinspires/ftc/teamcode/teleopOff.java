@@ -18,27 +18,35 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
+
 //TELEOP WITH 1 CONTROLLER
 @TeleOp(name = "Tele w/ 1")
 public class teleopOff extends LinearOpMode {
     public void runOpMode() {
 
         DcMotor fl = hardwareMap.dcMotor.get("front_left_motor");
-        DcMotor fr = hardwareMap.dcMotor.get("back_right_motor");
+        DcMotor fr = hardwareMap.dcMotor.get("front_right_motor");
         DcMotor bl = hardwareMap.dcMotor.get("back_left_motor");
-        DcMotor br = hardwareMap.dcMotor.get("front_right_motor");
-        DcMotor lift = hardwareMap.dcMotor.get("lift_dcMotor");
+        DcMotor br = hardwareMap.dcMotor.get("back_right_motor");
+        DcMotor lift1 = hardwareMap.dcMotor.get("liftMotor1");
+        DcMotor lift2 = hardwareMap.dcMotor.get("liftMotor2");
         //fl.setDirection(DcMotorSimple.Direction.REVERSE);
         fr.setDirection(DcMotorSimple.Direction.REVERSE);
         //bl.setDirection(DcMotorSimple.Direction.REVERSE);
         br.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         Servo clawServo = hardwareMap.servo.get("clawServo");
 
-        double driveSpeed = .5;
+        double driveSpeed = 0.4;
         final int liftHome = 0;
         double robotAngle = 0;
         boolean fieldCentric = false;
@@ -46,6 +54,9 @@ public class teleopOff extends LinearOpMode {
         double liftEncoder;
         boolean aButton = true;
         boolean yButton = true;
+        boolean xButton = true;
+        boolean bButton = true;
+        int clawPos = 0;
 
         Orientation angles;
         BNO055IMU imu;
@@ -56,9 +67,6 @@ public class teleopOff extends LinearOpMode {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
 
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         telemetry.addData("Status", "Initalized");
         telemetry.update();
         waitForStart();
@@ -66,10 +74,10 @@ public class teleopOff extends LinearOpMode {
 
             if (gamepad1.a && aButton) {
                 aButton = false;
-                if (driveSpeed == 1) { //if the current increment is 1, it'll switch to 0.5
-                    driveSpeed = 0.5;
+                if (driveSpeed == 0.7) { //if the current increment is 1, it'll switch to 0.5
+                    driveSpeed = 0.4;
                 } else { //if the current increment is not 1, it'll switch to 1
-                    driveSpeed = 1;
+                    driveSpeed = 0.7;
                 }
             }
             if (!gamepad1.a && !aButton) {
@@ -122,44 +130,51 @@ public class teleopOff extends LinearOpMode {
             bl.setPower(v3);
             br.setPower(v4);
 
-            if(gamepad1.dpad_down){
-                lift.setTargetPosition(liftHome);
-                lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift.setPower(.5);
-                while(lift.isBusy()){
-
-                }
-                lift.setPower(0);
-                lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
-
-            liftEncoder = lift.getCurrentPosition();
-
             if((gamepad1.right_trigger > 0) && gamepad1.left_trigger == 0){
-                lift.setPower(-gamepad1.right_trigger);
+                lift1.setPower(gamepad1.right_trigger);
+                lift2.setPower(-gamepad1.right_trigger);
             }
             if((gamepad1.left_trigger > 0) && gamepad1.right_trigger == 0){
-                if(liftEncoder <= 0){
-                    lift.setPower(gamepad1.left_trigger);
-                }else{
-                    lift.setPower(0);
-                }
+                lift1.setPower(-gamepad1.left_trigger);
+                lift2.setPower(gamepad1.left_trigger);
             }
             if(gamepad1.right_trigger == 0 && gamepad1.left_trigger == 0){
-                lift.setPower(0);
+                lift1.setPower(0);
+                lift2.setPower(0);
             }
 
-
-            if (gamepad1.x) {
-                clawServo.setPosition(.27);
+            if (gamepad1.x && xButton) {
+                telemetry.addData("flag 1", "entered gamepad1x&&xbutton loop");
+                telemetry.update();
+                xButton = false;
+                clawServo.setPosition(.3);
             }
-            if (gamepad1.b) {
-                clawServo.setPosition(.7);
+            if (!gamepad1.x && !xButton) {
+                telemetry.addData("flag 2", "entered !gamepad1x&&!xbutton loop");
+                telemetry.update();
+                xButton = true;
+            }
+
+            if (gamepad1.b && bButton) {
+                telemetry.addData("flag 3", "entered gamepad1b&&bbutton loop");
+                telemetry.update();
+                bButton = false;
+                clawServo.setPosition(.1);
+            }
+            if(!gamepad1.b && !bButton){
+                telemetry.addData("flag 4", "entered !gamepad1b&&b!button loop");
+                telemetry.update();
+                bButton = true;
             }
 
             telemetry.addData("Drive Speed Multiplier", driveSpeed);
             telemetry.addData("Field-Centric", fieldCentric);
-            telemetry.addData("Lift Encoder", liftEncoder);
+            telemetry.addData("lift1 enc ticks", lift1.getCurrentPosition());
+            telemetry.addData("lift2 enc ticks", lift2.getCurrentPosition());
+            telemetry.addData("Servo Pos", clawPos);
+            telemetry.addData("lift motor power", gamepad1.right_trigger);
+            telemetry.addData("angle", angles.firstAngle);
+            telemetry.addData("servo pos 2", clawServo.getPosition());
             telemetry.update();
         }
     }

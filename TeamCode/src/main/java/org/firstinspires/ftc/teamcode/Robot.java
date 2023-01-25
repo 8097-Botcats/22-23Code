@@ -28,7 +28,8 @@ public class Robot {
     DcMotor fr = null;
     DcMotor bl = null;
     DcMotor br = null;
-    DcMotor lift = null;
+    DcMotor lift1 = null;
+    DcMotor lift2 = null;
 
     Servo clawServo = null;
 
@@ -53,23 +54,26 @@ public class Robot {
         fr = hwMap.dcMotor.get("back_right_motor");
         bl = hwMap.dcMotor.get("back_left_motor");
         br = hwMap.dcMotor.get("front_right_motor");
-        lift = hwMap.dcMotor.get("lift_dcMotor");
+        lift1 = hwMap.dcMotor.get("liftMotor1");
+        lift2 = hwMap.dcMotor.get("liftMotor2");
         //fl.setDirection(DcMotorSimple.Direction.REVERSE);
         //bl.setDirection(DcMotorSimple.Direction.REVERSE);
-        fr.setDirection(DcMotorSimple.Direction.REVERSE);
-        br.setDirection(DcMotorSimple.Direction.REVERSE);
+        //fr.setDirection(DcMotorSimple.Direction.REVERSE);
+        //br.setDirection(DcMotorSimple.Direction.REVERSE);
 
         clawServo = hwMap.servo.get("clawServo");
         //liftServo = hwMap.crservo.get("liftServo");
 
+        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        imu = hwMap.get(BNO055IMU.class, "imu");
+        /*imu = hwMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
 
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);*/
 
     }
 
@@ -138,9 +142,9 @@ public class Robot {
         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        fl.setTargetPosition(distance);
+        fl.setTargetPosition(-distance);
         fr.setTargetPosition(-distance);
-        bl.setTargetPosition(-distance);
+        bl.setTargetPosition(distance);
         br.setTargetPosition(distance);
 
         fl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -166,9 +170,9 @@ public class Robot {
         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        fl.setTargetPosition(-distance);
+        fl.setTargetPosition(distance);
         fr.setTargetPosition(distance);
-        bl.setTargetPosition(distance);
+        bl.setTargetPosition(-distance);
         br.setTargetPosition(-distance);
 
         fl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -189,30 +193,30 @@ public class Robot {
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void driveForward(double power) {
-        fl.setPower(power);
-        fr.setPower(power);
-        bl.setPower(power);
-        br.setPower(power);
-    }
-    private void driveBack(double power){
         fl.setPower(-power);
         fr.setPower(-power);
         bl.setPower(-power);
         br.setPower(-power);
     }
-    private void driveRight(double power){
+    public void driveBack(double power){
+        fl.setPower(power);
+        fr.setPower(power);
+        bl.setPower(power);
+        br.setPower(power);
+    }
+    public void driveRight(double power){
         fl.setPower(power);
         fr.setPower(-power);
         bl.setPower(-power);
         br.setPower(power);
     }
-    private void driveLeft(double power){
+    public void driveLeft(double power){
         fl.setPower(-power);
         fr.setPower(power);
         bl.setPower(power);
         br.setPower(-power);
     }
-    private void stopDriving() {
+    public void stopDriving() {
         fl.setPower(0);
         fr.setPower(0);
         bl.setPower(0);
@@ -230,8 +234,8 @@ public class Robot {
         int totalTime = 0;
 
         double error = 90, P, I, D, integral = 0, derivative, correction, t, lastTime = 0, dt = 0.1, lastError = 90;
-        double kp = .0135;
-        double ki = 0;
+        double kp = .017;
+        double ki =  0;
         double kd = .02;
         while(Math.abs(error) > 1){
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -252,10 +256,10 @@ public class Robot {
 
             correction = P + I + D;
 
-            fl.setPower(-correction);
-            fr.setPower(correction);
-            bl.setPower(-correction);
-            br.setPower(correction);
+            fl.setPower(correction);
+            fr.setPower(-correction);
+            bl.setPower(correction);
+            br.setPower(-correction);
 
             //System.out.println(P + " " + I + " " + D);
             System.out.println(error);
@@ -287,6 +291,39 @@ public class Robot {
         bl.setPower(0);
         br.setPower(0);
     }
+    public void lift(double power, int distance){
+        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        lift1.setTargetPosition(distance);
+        lift2.setTargetPosition(-distance);
 
+        lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        lift1.setPower(power);
+        lift2.setPower(power);
+
+        while(lift1.isBusy() && lift2.isBusy()){
+            telemetry.addData("enc Tickes lift1", lift1.getCurrentPosition());
+            telemetry.addData("enc ticks lift2", lift2.getCurrentPosition());
+            telemetry.update();
+        }
+        lift1.setPower(0);
+        lift2.setPower(0);
+
+        lift1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void liftPower(double power){
+        lift1.setPower(power);
+        lift2.setPower(-power);
+    }
+    public void openClaw(){
+        clawServo.setPosition(.1);
+    }
+
+    public void closeClaw(){
+        clawServo.setPosition(.3);
+    }
 }
