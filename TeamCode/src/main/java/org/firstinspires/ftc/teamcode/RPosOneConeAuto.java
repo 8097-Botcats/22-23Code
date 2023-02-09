@@ -49,8 +49,8 @@ public class RPosOneConeAuto extends LinearOpMode {
                  */
             }
         });
-        Pose2d startPose = new Pose2d(-35.5, -60.5, Math.toRadians(90));
-        Pose2d postScorePose = new Pose2d(-65, -30.5, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(36, -64.5, Math.toRadians(90));
+        Pose2d postScorePose = new Pose2d(12, -36, Math.toRadians(90));
         //Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
 
         robot.init(hardwareMap, telemetry);
@@ -61,16 +61,16 @@ public class RPosOneConeAuto extends LinearOpMode {
         TrajectorySequence trajSeqScore = drive.trajectorySequenceBuilder(startPose)
                 .waitSeconds(.5)
                 .forward(1)
-                .lineTo(new Vector2d(-63, -59.5))
-                .lineTo(new Vector2d(-63, -30))
-                .turn(Math.toRadians(-44))
+                .lineTo(new Vector2d(8.5, -63.5))
+                .lineTo(new Vector2d(8.5, -34))
+                .turn(Math.toRadians(40.4))
                 .addTemporalMarker(9, () -> {
-                    robot.lift(.6, 3000);
+                    robot.lift(.6, 4500);
                     robot.liftPower(.03);
                 })
                 .waitSeconds(3)
                 //.lineTo(new Vector2d(-66, -38))
-                .forward(5)
+                .forward(4)
                 .waitSeconds(2)
                 .addTemporalMarker(13, () -> {
                     robot.openClaw();
@@ -79,11 +79,11 @@ public class RPosOneConeAuto extends LinearOpMode {
                 .build();
 
         Trajectory traj1 = drive.trajectoryBuilder(postScorePose)
-                .strafeRight(28)
+                .strafeRight(24)
                 .build();
 
         Trajectory traj2 = drive.trajectoryBuilder(postScorePose)
-                .strafeRight(58)
+                .strafeRight(48)
                 .build();
         while(!isStopRequested() && !isStarted()) {
             ArrayList<AprilTagDetection> detections = pipeline.getLatestDetections();
@@ -103,16 +103,16 @@ public class RPosOneConeAuto extends LinearOpMode {
             robot.lift(.5, 100);
             if(detectionID == 0){
                 drive.followTrajectorySequence(trajSeqScore);
-                robot.lift(-.7, -2750);
+                robot.lift(-.7, -3900);
             }
             if(detectionID == 1){
                 drive.followTrajectorySequence(trajSeqScore);
-                robot.lift(-.7, -2750);
+                robot.lift(-.7, -3900);
                 drive.followTrajectory(traj1);
             }
             if(detectionID == 2){
                 drive.followTrajectorySequence(trajSeqScore);
-                robot.lift(-.7, -2750);
+                robot.lift(-.7, -3900);
                 drive.followTrajectory(traj2);
             }
             //drive.followTrajectory(trajLeft);
